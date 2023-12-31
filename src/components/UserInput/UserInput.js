@@ -1,98 +1,81 @@
-import React, {useState , useEffect} from 'react';
-import './UserInput.css';
-import ResultsTable from '../ResultsTable/ResultsTable';
+import React, { useState, useEffect } from 'react';
+import clases from './UserInput.module.css';
+
+const InitialUserInput = {
+    'current-savings': 10000,
+    'yearly-contribution': 1200,
+    'expected-return': 7,
+    'duration': 10
+};
 
 const UserInput = props => {
-    const [formData, setFormData] = useState({
-        'current-savings': 0,
-        'yearly-contribution': 0,
-        'expected-return': 0,
-        'duration': 0
-    });
+    const [userInput, setUserInput] = useState(InitialUserInput);
 
-    const handleChange = event => {
-        const {id, value} = event.target;
-        setFormData((prevData) => {
-            const updatedData = { ...prevData, [id]: +value,};
-            return updatedData
+    const inputChangeHandler = (input, value) => {
+        setUserInput((prevInput) => {
+            return {
+                ...prevInput,
+                [input]: value
+            }
         });
-        // setYearlyData(calc(formData));
     }
-
-    useEffect(() => {}, [formData]);
-    
-
-    const [yearlyData, setYearlyData] = useState([]); // per-year results
-
-    const calc = (formData) => {
-        const yearlyData = [];
-        let currentSavings = +formData['current-savings']; // feel free to change the shape of this input object!
-        const yearlyContribution = +formData['yearly-contribution']; // as mentioned: feel free to change the shape...
-        const expectedReturn = +formData['expected-return'] / 100;
-        const duration = +formData['duration'];
-    
-        for (let i = 0; i < duration; i++) {
-          const yearlyInterest = currentSavings * expectedReturn;
-          currentSavings += yearlyInterest + yearlyContribution;
-          yearlyData.push({
-            // feel free to change the shape of the data pushed to the array!
-            year: i + 1,
-            yearlyInterest: yearlyInterest,
-            savingsEndOfYear: currentSavings,
-            yearlyContribution: yearlyContribution,
-          });
-    }
-        return yearlyData;
-    }
-
-    useEffect(() => {setYearlyData(calc(formData))}, [formData]);
-
 
     const formSubmitHandler = event => {
         event.preventDefault();
-        setYearlyData(calc(formData));
+        props.onCalculate(userInput);
     }
 
-    const resetForm = () => {
-        setFormData({});
-        setYearlyData([]);
+    const resetHandler = () => {
+        setUserInput(InitialUserInput);
     }
 
     return (
         <div>
-            <form className="form" onSubmit={formSubmitHandler}>
-                <div className="input-group">
+            <form className={clases.form} onSubmit={formSubmitHandler}>
+                <div className={clases['input-group']} >
                     <p>
                         <label htmlFor="current-savings">Current Savings ($)</label>
-                        <input type="number" id="current-savings" value={formData['current-savings']} onChange={handleChange} />
+                        <input type="number" id="current-savings"
+                            value={userInput['current-savings']}
+                            onChange={(event) => inputChangeHandler('current-savings', event.target.value)}
+                        />
                     </p>
                     <p>
                         <label htmlFor="yearly-contribution">Yearly Savings ($)</label>
-                        <input type="number" id="yearly-contribution" value={formData['yearly-contribution']} onChange={handleChange} />
+                        <input type="number" id="yearly-contribution"
+                            value={userInput['yearly-contribution']}
+                            onChange={(event) => inputChangeHandler('yearly-contribution', event.target.value)}
+                        />
                     </p>
                 </div>
-                <div className="input-group">
+                <div className={clases['input-group']}>
                     <p>
                         <label htmlFor="expected-return">
                             Expected Interest (%, per year)
                         </label>
-                        <input type="number" id="expected-return" value={formData['expected-return']} onChange={handleChange} />
+                        <input type="number" id="expected-return"
+                            value={userInput['expected-return']}
+                            onChange={(event) => inputChangeHandler('expected-return', event.target.value)}
+                        />
                     </p>
                     <p>
                         <label htmlFor="duration">Investment Duration (years)</label>
-                        <input type="number" id="duration" value={formData['duration']} onChange={handleChange} />
+                        <input type="number" id="duration"
+                            value={userInput['duration']}
+                            onChange={(event) => inputChangeHandler('duration', event.target.value)}
+                        />
                     </p>
                 </div>
-                <p className="actions">
-                    <button type="button" className="buttonAlt" onClick={resetForm} >
+                <p className={clases.actions}>
+                    <button type="button" className={clases.buttonAlt} onClick={resetHandler} >
                         Reset
                     </button>
-                    <button type="submit" className="button">
+                    <button type="submit" className={clases.button}>
                         Calculate
                     </button>
                 </p>
             </form>
-            <ResultsTable table={yearlyData} />
+            {/* <ResultsTable table={yearlyData} /> */}
         </div>
     )
 }

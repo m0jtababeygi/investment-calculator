@@ -1,33 +1,39 @@
+import clases from './ResultsTable.module.css';
 
-import './ResultsTable.css';
+const formatter = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+});
 
-const ResultsTable = ( props ) => {
+const ResultsTable = (props) => {
     return (
-        <table className="result">
+        <table className={clases.result}>
             <thead>
                 <tr>
                     <th>Year</th>
                     <th>Total Savings</th>
                     <th>Interest (Year)</th>
                     <th>Invested Capital</th>
-                    {/* <th>Total Interest</th> */}
+                    <th>Total Interest</th>
                 </tr>
             </thead>
             <tbody>
-                {props.table.length > 0 ? (
-                    props.table.map((data) => (
-                        <tr key={data.year}>
-                            <td>{data.year}</td>
-                            <td>{data.savingsEndOfYear.toFixed(2)}</td>
-                            <td>{data.yearlyInterest.toFixed(2)}</td>
-                            <td> {data.yearlyContribution} </td>
-                        </tr>
-                    ))
-                    ) : (
-                        <tr>
-                            <td colSpan="4">No data available</td>
-                        </tr>
-                    )
+                {props.data.map((yearData) => (
+                    <tr key={yearData.year}>
+                        <td>{yearData.year}</td>
+                        <td>{formatter.format(yearData.savingsEndOfYear)}</td>
+                        <td>{formatter.format(yearData.yearlyInterest)}</td>
+                        <td>{formatter.format(yearData.savingsEndOfYear -
+                            props.initialInvestment -
+                            yearData.yearlyContribution * yearData.year)}
+                        </td>
+                        <td>{formatter.format(props.initialInvestment +
+                            yearData.yearlyContribution * yearData.year)}
+                        </td>
+                    </tr>
+                ))
                 }
             </tbody>
         </table>
